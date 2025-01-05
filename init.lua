@@ -353,9 +353,12 @@ require('lazy').setup({
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
+      {
+        'nvim-telescope/telescope-live-grep-args.nvim',
+        version = '^1.0.0',
+      },
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
         'nvim-telescope/telescope-fzf-native.nvim',
-
         -- `build` is used to run some command when the plugin is installed/updated.
         -- This is only run then, not every time Neovim starts up.
         build = 'make',
@@ -450,9 +453,18 @@ require('lazy').setup({
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
 
+      -- Shortcut for searching Snippets
       vim.keymap.set('n', '<leader>fs', function()
-        builtin.live_grep { cwd = '~/.config/snippets' }
+        require('telescope.builtin').live_grep {
+          cwd = '~/.snippets',
+          additional_args = function(opts)
+            return { '--ignore-case' }
+          end,
+        }
       end, { desc = '[F]ind in [S]nippets', noremap = true, silent = true })
+
+      -- Shortcut for Resuming a Search
+      vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = '[F]ind [R]esume' })
     end,
   },
 
@@ -959,7 +971,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
